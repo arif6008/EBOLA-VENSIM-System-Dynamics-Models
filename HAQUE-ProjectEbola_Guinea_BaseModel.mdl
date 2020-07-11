@@ -1,0 +1,345 @@
+{UTF-8}
+People leaving quarantine per day=
+	Control Measure*Quarantined/Average Incubation Time in Quarantine
+	~	people
+	~		|
+
+Cases= INTEG (
+	Case fatality Rate*Deaths*Symptomatic/Control Measure,
+		1)
+	~	
+	~		|
+
+Probability of Death In Quarantine=
+	0.045
+	~	
+	~		|
+
+Deaths= INTEG (
+	IF THEN ELSE(Cases<=Case Threshold, (Dying Rate From Quarantine+Symptotic Death Rate\
+		-0*Case fatality Rate) , -0.012 ),
+		0)
+	~	
+	~		|
+
+Control Measure=
+	1.125
+	~	
+	~		|
+
+Case Threshold=
+	500
+	~	
+	~		|
+
+Case fatality Rate=
+	Deaths*Case fatality percentage
+	~	
+	~		|
+
+Quarantine Rate=
+	(1-Symptomatic Fractional Population)*Symptomatic/Avgerage Time To Quarantine
+	~	people/Day
+	~		|
+
+Symptomatic Fractional Population=
+	Symptomatic/Total Population
+	~	
+	~		|
+
+Symptotic Death Rate=
+	IF THEN ELSE(Cases<=Case Threshold, (Case fatality percentage*Probability of Death*Symptomatic Fractional Population\
+		) , 0)
+	~	people/Day
+	~		|
+
+Dying Rate From Quarantine=
+	IF THEN ELSE(Cases<=3000, People leaving quarantine per day*Probability of Death In Quarantine\
+		 , 0)
+	~	people/Day
+	~		|
+
+Case fatality percentage=
+	0.75
+	~	
+	~		|
+
+Infection Rate=
+	Asymptomatic*Contact Rate*Infectivity*(1/Total Population)*(Susceptible Population)
+	~	people/Day
+	~		|
+
+Quarantined= INTEG (
+	Quarantine Rate-Dying Rate From Quarantine-Recovering Rate,
+		0)
+	~	
+	~		|
+
+Rate of Becoming Symptotic=
+	Asymptomatic/(Total Population*Time to show symptoms)
+	~	people/Day
+	~		|
+
+Probability of Death=
+	0.15
+	~	
+	~		|
+
+Recovering Rate=
+	(1-Probability of Death In Quarantine)*(People leaving quarantine per day)/Avg Recovery Time From Hospital
+	~	people/Day
+	~		|
+
+Total Population=
+	Susceptible Population+Asymptomatic+Quarantined+Recovered Population+Symptomatic
+	~	
+	~		|
+
+Symptomatic= INTEG (
+	Rate of Becoming Symptotic-Quarantine Rate-Symptotic Death Rate,
+		1)
+	~	
+	~		|
+
+Recovered Population= INTEG (
+	Recovering Rate,
+		0)
+	~	
+	~		|
+
+Asymptomatic= INTEG (
+	Infection Rate-Rate of Becoming Symptotic,
+		1)
+	~	
+	~		|
+
+Avgerage Time To Quarantine=
+	2
+	~	Day
+	~		|
+
+Avg Recovery Time From Hospital=
+	13.5
+	~	Day
+	~		|
+
+Average Incubation Time in Quarantine=
+	7
+	~	Day
+	~		|
+
+Contact Rate=
+	6
+	~	contacts/Day
+	~		|
+
+Infectivity=
+	0.0702
+	~	
+	~		|
+
+Susceptible Population= INTEG (
+	-Infection Rate,
+		1e+007)
+	~	
+	~		|
+
+Time to show symptoms=
+	4.75
+	~	Day
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 1000
+	~	Day
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Day
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Day [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Day [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|120,120,100,0
+10,1,Susceptible Population,147,326,48,25,3,131,0,0,0,0,0,0
+10,2,Asymptomatic,422,327,57,25,3,131,0,0,0,0,0,0
+10,3,Symptomatic,704,333,54,26,3,131,0,0,0,0,0,0
+10,4,Recovered Population,1221,334,51,28,3,131,0,0,0,0,0,0
+1,5,7,2,4,0,0,22,0,0,0,-1--1--1,,1|(325,326)|
+1,6,7,1,100,0,0,22,0,0,0,-1--1--1,,1|(234,326)|
+11,7,620,280,326,6,8,34,3,0,0,1,0,0,0
+10,8,Infection Rate,280,345,55,11,40,131,0,0,-1,0,0,0
+1,9,11,3,4,0,0,22,0,0,0,-1--1--1,,1|(604,329)|
+1,10,11,2,100,0,0,22,0,0,0,-1--1--1,,1|(513,329)|
+11,11,476,553,329,6,8,34,3,0,0,1,0,0,0
+10,12,Rate of Becoming Symptotic,553,359,74,22,40,3,0,0,-1,0,0,0
+10,13,Contact Rate,162,436,46,25,8,131,0,0,0,0,0,0
+10,14,Infectivity,372,448,42,12,8,3,0,0,0,0,0,0
+1,15,13,8,1,0,0,0,0,64,0,-1--1--1,,1|(226,396)|
+1,16,14,8,1,0,0,0,0,64,0,-1--1--1,,1|(329,385)|
+10,17,Time to show symptoms,573,200,59,21,8,131,0,0,0,0,0,0
+10,18,Avgerage Time To Quarantine,908,211,71,22,8,3,0,0,0,0,0,0
+10,19,Avg Recovery Time From Hospital,1259,497,61,32,8,131,0,0,0,0,0,0
+10,20,People leaving quarantine per day,1151,192,77,22,8,3,0,0,0,0,0,0
+10,21,Average Incubation Time in Quarantine,1109,111,84,22,8,3,0,0,0,0,0,0
+1,22,21,20,0,0,0,0,0,64,0,-1--1--1,,1|(1126,145)|
+1,23,1,8,1,0,0,0,0,64,0,-1--1--1,,1|(208,367)|
+1,24,17,12,1,0,0,0,0,64,0,-1--1--1,,1|(520,267)|
+10,25,Quarantined,979,336,53,27,3,131,0,0,0,0,0,0
+1,26,28,25,4,0,0,22,0,0,0,-1--1--1,,1|(877,333)|
+1,27,28,3,100,0,0,22,0,0,0,-1--1--1,,1|(787,333)|
+11,28,172,823,333,6,8,34,3,0,0,1,0,0,0
+10,29,Quarantine Rate,823,363,46,22,40,3,0,0,-1,0,0,0
+1,30,18,29,0,0,0,0,0,64,0,-1--1--1,,1|(868,280)|
+1,31,33,4,4,0,0,22,0,0,0,-1--1--1,,1|(1135,335)|
+1,32,33,25,100,0,0,22,0,0,0,-1--1--1,,1|(1060,335)|
+11,33,380,1094,335,6,8,34,3,0,0,1,0,0,0
+10,34,Recovering Rate,1094,365,48,22,40,3,0,0,-1,0,0,0
+1,35,20,34,1,0,0,0,0,64,0,-1--1--1,,1|(1084,269)|
+1,36,25,20,0,0,0,0,0,64,0,-1--1--1,,1|(1062,266)|
+1,37,3,29,1,0,0,0,0,64,0,-1--1--1,,1|(765,374)|
+1,38,2,12,1,0,0,0,0,64,0,-1--1--1,,1|(450,383)|
+1,39,19,34,0,0,0,0,0,64,0,-1--1--1,,1|(1175,430)|
+10,40,Total Population,150,578,45,22,8,3,0,0,0,0,0,0
+1,41,40,8,1,0,0,0,0,64,0,-1--1--1,,1|(41,429)|
+10,42,Deaths,705,615,46,27,3,131,0,0,0,0,0,0
+1,43,45,42,4,0,0,22,0,0,0,-1--1--1,,1|(705,517)|
+1,44,45,3,100,0,0,22,0,0,0,-1--1--1,,1|(705,396)|
+11,45,252,705,440,8,6,33,3,0,0,4,0,0,0
+10,46,Symptotic Death Rate,759,440,46,22,40,3,0,0,-1,0,0,0
+10,47,Probability of Death,895,554,58,22,8,3,0,0,0,0,0,0
+1,48,47,46,1,0,0,0,0,64,0,-1--1--1,,1|(847,414)|
+1,49,51,42,4,0,0,22,0,0,0,-1--1--1,,1|(984,615)|
+1,50,51,25,100,0,0,22,0,0,0,-1--1--1,,1|(984,388)|
+11,51,460,984,421,6,8,34,3,0,0,1,0,0,0
+10,52,Dying Rate From Quarantine,984,451,71,22,40,3,0,0,-1,0,0,0
+10,53,Probability of Death In Quarantine,1154,568,85,22,8,3,0,0,0,0,0,0
+1,54,53,52,0,0,0,0,0,64,0,-1--1--1,,1|(1074,513)|
+1,55,20,52,1,0,0,0,0,64,0,-1--1--1,,1|(1099,395)|
+1,56,53,34,1,0,0,0,0,64,0,-1--1--1,,1|(1139,466)|
+12,57,25954628,1612,210,261,192,3,188,0,0,1,0,0,0
+Deaths
+1,58,40,12,1,0,0,0,0,64,0,-1--1--1,,1|(314,421)|
+1,59,1,40,1,0,0,0,0,64,0,-1--1--1,,1|(110,509)|
+1,60,2,40,1,0,0,0,0,64,0,-1--1--1,,1|(249,427)|
+1,61,3,40,1,0,0,0,0,64,0,-1--1--1,,1|(441,481)|
+1,62,25,40,1,0,0,0,0,64,0,-1--1--1,,1|(624,537)|
+1,63,4,40,1,0,0,0,0,64,0,-1--1--1,,1|(303,596)|
+1,64,2,8,1,0,0,0,0,64,0,-1--1--1,,1|(316,267)|
+10,65,Cases,714,766,48,24,3,131,0,0,0,0,0,0
+1,66,68,65,4,0,0,22,0,0,0,-1--1--1,,1|(708,715)|
+1,67,68,42,100,0,0,22,0,0,0,-1--1--1,,1|(708,659)|
+11,68,220,708,683,8,6,33,3,0,0,4,0,0,0
+10,69,Case fatality Rate,769,683,53,22,40,3,0,0,-1,0,0,0
+10,70,Case fatality percentage,918,746,53,22,8,3,0,0,0,0,0,0
+1,71,42,69,1,0,0,0,0,64,0,-1--1--1,,1|(787,635)|
+12,72,10749484,1612,609,262,197,3,188,0,0,1,0,0,0
+Cases
+1,73,70,46,1,0,0,0,0,64,0,-1--1--1,,1|(859,592)|
+1,74,65,46,1,0,0,0,0,64,0,-1--1--1,,1|(818,699)|
+1,75,65,52,1,0,0,0,0,64,0,-1--1--1,,1|(1028,702)|
+10,76,Symptomatic Fractional Population,527,507,62,30,8,131,0,0,0,0,0,0
+1,77,3,76,1,0,0,0,0,64,0,-1--1--1,,1|(631,418)|
+1,78,40,76,1,0,0,0,0,64,0,-1--1--1,,1|(339,555)|
+1,79,76,46,1,0,0,0,0,64,0,-1--1--1,,1|(640,493)|
+1,80,76,29,1,0,0,0,0,64,0,-1--1--1,,1|(687,437)|
+10,81,Case Threshold,469,659,63,20,8,131,0,0,0,0,0,0
+1,82,81,46,1,0,0,0,0,64,0,-1--1--1,,1|(629,569)|
+1,83,3,65,1,0,0,0,0,64,0,-1--1--1,,1|(627,734)|
+1,84,70,69,1,0,0,0,0,64,0,-1--1--1,,1|(835,738)|
+1,85,42,65,1,0,0,0,0,64,0,-1--1--1,,1|(745,691)|
+1,86,65,42,1,0,0,0,0,64,0,-1--1--1,,1|(666,695)|
+1,87,81,42,1,0,0,0,0,64,0,-1--1--1,,1|(589,652)|
+10,88,Control Measure,968,136,36,22,8,3,0,0,0,0,0,0
+1,89,88,20,1,0,0,0,0,64,0,-1--1--1,,1|(1037,172)|
+1,90,88,65,1,0,0,0,0,64,0,-1--1--1,,1|(1218,666)|
+12,91,0,613,84,193,36,3,135,0,0,-1,0,0,0
+Stock & Flow Diagram - Basic Model Guinea
+///---\\\
+:GRAPH Deaths
+:TITLE Cumulative Deaths (Guinea)
+:WIP
+:STAMP 0
+:X-AXIS Time
+:X-MIN 0
+:X-MAX 800
+:CUMMULATIVE
+:MAX-POINTS 4000
+:SCALE
+:VAR Deaths
+:DATASET *
+
+:GRAPH infection
+:TITLE Cumulative Infection
+:X-AXIS Time
+:X-MIN 0
+:X-MAX 400
+:CUMMULATIVE
+:SCALE
+:VAR Infection Spreadable Population
+
+:GRAPH Cases
+:TITLE Reported Cases (Guinea)
+:X-AXIS Time
+:X-MIN 0
+:X-MAX 800
+:STACK 0
+:SCALE
+:VAR Cases
+
+:GRAPH Infected
+:TITLE Cumulative Infected
+:X-AXIS Time
+:X-MAX 1000
+:CUMMULATIVE
+:SCALE
+:VAR Symptomatic
+:L<%^E!@
+1:Current.vdf
+1:Current_Gueine1_Basic.vdf
+9:Current
+22:$,Dollar,Dollars,$s
+22:Hour,Hours
+22:Month,Months
+22:Person,People,Persons
+22:Unit,Units
+22:Week,Weeks
+22:Year,Years
+22:Day,Days
+23:0
+15:0,0,0,0,0,0
+19:100,0
+27:2,
+34:0,
+4:Time
+5:Cases
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:4
+41:0
+42:1
+24:0
+25:1000
+26:1000

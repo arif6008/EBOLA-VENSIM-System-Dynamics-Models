@@ -1,0 +1,351 @@
+{UTF-8}
+Symptotic Death Rate=
+	IF THEN ELSE(Cases<=Case Threshold, (Case fatality percentage*Probability of Death*Symptomatic Fractional Population\
+		*Control Measure*4.8) ,
+	 0)
+	~	people/Day
+	~		|
+
+Control Measure=
+	3.5
+	~	
+	~		|
+
+Case fatality Rate=
+	Deaths*Case fatality percentage*Control Measure*4.8
+	~	
+	~		|
+
+Deaths= INTEG (
+	IF THEN ELSE(Cases<=3000, (Dying Rate From Quarantine+Symptotic Death Rate-0*Case fatality Rate\
+		) , -0.012 ),
+		0)
+	~	
+	~		|
+
+Infection Rate=
+	IF THEN ELSE(Cases<=Case Threshold, Asymptomatic*Contact Rate*Infectivity*(1/Total Population\
+		)*(Susceptible Population) , Asymptomatic*Contact Rate*Infectivity*(1/Total Population\
+		)*(Susceptible Population)/(Control Measure) )
+	~	people/Day
+	~		|
+
+People leaving quarantine per day=
+	Control Measure*Quarantined/Avg Recovery Time from Quarantine
+	~	people
+	~		|
+
+Cases= INTEG (
+	Case fatality Rate*Deaths*Symptomatic/Control Measure,
+		1)
+	~	
+	~		|
+
+Probability of Death In Quarantine=
+	0.025
+	~	
+	~		|
+
+Case Threshold=
+	2500
+	~	
+	~		|
+
+Quarantine Rate=
+	(1-Symptomatic Fractional Population)*Symptomatic/Avgerage Time To Quarantine
+	~	people/Day
+	~		|
+
+Symptomatic Fractional Population=
+	Symptomatic/Total Population
+	~	
+	~		|
+
+Dying Rate From Quarantine=
+	IF THEN ELSE(Cases<=3000, People leaving quarantine per day*Probability of Death In Quarantine\
+		 , 0)
+	~	people/Day
+	~		|
+
+Case fatality percentage=
+	0.75
+	~	
+	~		|
+
+Quarantined= INTEG (
+	Quarantine Rate-Dying Rate From Quarantine-Recovering Rate,
+		0)
+	~	
+	~		|
+
+Rate of Becoming Symptotic=
+	Asymptomatic/(Total Population*Time to show symptoms)
+	~	people/Day
+	~		|
+
+Probability of Death=
+	0.15
+	~	
+	~		|
+
+Recovering Rate=
+	(1-Probability of Death In Quarantine)*(People leaving quarantine per day)/Avg Recovery Time
+	~	people/Day
+	~		|
+
+Total Population=
+	Susceptible Population+Asymptomatic+Quarantined+Recovered Population+Symptomatic
+	~	
+	~		|
+
+Symptomatic= INTEG (
+	Rate of Becoming Symptotic-Quarantine Rate-Symptotic Death Rate,
+		1)
+	~	
+	~		|
+
+Recovered Population= INTEG (
+	Recovering Rate,
+		0)
+	~	
+	~		|
+
+Asymptomatic= INTEG (
+	Infection Rate-Rate of Becoming Symptotic,
+		1)
+	~	
+	~		|
+
+Avgerage Time To Quarantine=
+	2
+	~	Day
+	~		|
+
+Avg Recovery Time=
+	12
+	~	Day
+	~		|
+
+Avg Recovery Time from Quarantine=
+	5
+	~	Day
+	~		|
+
+Contact Rate=
+	6
+	~	contacts/Day
+	~		|
+
+Infectivity=
+	0.0702
+	~	
+	~		|
+
+Susceptible Population= INTEG (
+	-Infection Rate,
+		4.6e+006)
+	~	
+	~		|
+
+Time to show symptoms=
+	6
+	~	Day
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 1000
+	~	Day
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Day
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Day [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Day [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|120,120,100,0
+10,1,Susceptible Population,126,347,48,25,3,131,0,0,0,0,0,0
+10,2,Asymptomatic,401,348,57,25,3,131,0,0,0,0,0,0
+10,3,Symptomatic,683,354,54,26,3,131,0,0,0,0,0,0
+10,4,Recovered Population,1200,355,51,28,3,131,0,0,0,0,0,0
+1,5,7,2,4,0,0,22,0,0,0,-1--1--1,,1|(304,347)|
+1,6,7,1,100,0,0,22,0,0,0,-1--1--1,,1|(213,347)|
+11,7,620,259,347,6,8,34,3,0,0,1,0,0,0
+10,8,Infection Rate,259,366,55,11,40,131,0,0,-1,0,0,0
+1,9,11,3,4,0,0,22,0,0,0,-1--1--1,,1|(583,350)|
+1,10,11,2,100,0,0,22,0,0,0,-1--1--1,,1|(492,350)|
+11,11,348,532,350,6,8,34,3,0,0,1,0,0,0
+10,12,Rate of Becoming Symptotic,532,380,74,22,40,3,0,0,-1,0,0,0
+10,13,Contact Rate,103,497,46,25,8,131,0,0,0,0,0,0
+10,14,Infectivity,357,484,42,12,8,3,0,0,0,0,0,0
+1,15,13,8,1,0,0,0,0,64,0,-1--1--1,,1|(190,441)|
+1,16,14,8,1,0,0,0,0,64,0,-1--1--1,,1|(313,411)|
+10,17,Time to show symptoms,565,239,57,22,8,3,0,0,0,0,0,0
+10,18,Avgerage Time To Quarantine,887,232,71,22,8,3,0,0,0,0,0,0
+10,19,Avg Recovery Time,1249,510,60,22,8,3,0,0,0,0,0,0
+10,20,People leaving quarantine per day,1130,213,77,22,8,3,0,0,0,0,0,0
+10,21,Avg Recovery Time from Quarantine,1088,132,84,22,8,3,0,0,0,0,0,0
+1,22,21,20,0,0,0,0,0,64,0,-1--1--1,,1|(1105,166)|
+1,23,1,8,1,0,0,0,0,64,0,-1--1--1,,1|(187,388)|
+1,24,17,12,1,0,0,0,0,64,0,-1--1--1,,1|(515,294)|
+10,25,Quarantined,958,357,53,27,3,131,0,0,0,0,0,0
+1,26,28,25,4,0,0,22,0,0,0,-1--1--1,,1|(856,354)|
+1,27,28,3,100,0,0,22,0,0,0,-1--1--1,,1|(766,354)|
+11,28,460,802,354,6,8,34,3,0,0,1,0,0,0
+10,29,Quarantine Rate,802,384,46,22,40,3,0,0,-1,0,0,0
+1,30,18,29,0,0,0,0,0,64,0,-1--1--1,,1|(847,301)|
+1,31,33,4,4,0,0,22,0,0,0,-1--1--1,,1|(1114,356)|
+1,32,33,25,100,0,0,22,0,0,0,-1--1--1,,1|(1039,356)|
+11,33,524,1073,356,6,8,34,3,0,0,1,0,0,0
+10,34,Recovering Rate,1073,386,48,22,40,3,0,0,-1,0,0,0
+1,35,20,34,1,0,0,0,0,64,0,-1--1--1,,1|(1063,290)|
+1,36,25,20,0,0,0,0,0,64,0,-1--1--1,,1|(1041,287)|
+1,37,3,29,1,0,0,0,0,64,0,-1--1--1,,1|(744,395)|
+1,38,2,12,1,0,0,0,0,64,0,-1--1--1,,1|(429,404)|
+1,39,19,34,0,0,0,0,0,64,0,-1--1--1,,1|(1166,452)|
+10,40,Total Population,129,599,45,22,8,3,0,0,0,0,0,0
+1,41,40,8,1,0,0,0,0,64,0,-1--1--1,,1|(106,327)|
+10,42,Deaths,684,636,46,27,3,131,0,0,0,0,0,0
+1,43,45,42,4,0,0,22,0,0,0,-1--1--1,,1|(684,538)|
+1,44,45,3,100,0,0,22,0,0,0,-1--1--1,,1|(684,417)|
+11,45,316,684,461,8,6,33,3,0,0,4,0,0,0
+10,46,Symptotic Death Rate,738,461,46,22,40,3,0,0,-1,0,0,0
+10,47,Probability of Death,874,575,58,22,8,3,0,0,0,0,0,0
+1,48,47,46,1,0,0,0,0,64,0,-1--1--1,,1|(826,435)|
+1,49,51,42,4,0,0,22,0,0,0,-1--1--1,,1|(963,636)|
+1,50,51,25,100,0,0,22,0,0,0,-1--1--1,,1|(963,409)|
+11,51,220,963,442,6,8,34,3,0,0,1,0,0,0
+10,52,Dying Rate From Quarantine,963,472,71,22,40,3,0,0,-1,0,0,0
+10,53,Probability of Death In Quarantine,1133,589,85,22,8,3,0,0,0,0,0,0
+1,54,53,52,0,0,0,0,0,64,0,-1--1--1,,1|(1053,534)|
+1,55,20,52,1,0,0,0,0,64,0,-1--1--1,,1|(1078,416)|
+1,56,53,34,1,0,0,0,0,64,0,-1--1--1,,1|(1118,487)|
+12,57,68619548,1591,231,261,192,3,188,0,0,1,0,0,0
+Deaths
+1,58,40,12,1,0,0,0,0,64,0,-1--1--1,,1|(293,442)|
+1,59,1,40,1,0,0,0,0,64,0,-1--1--1,,1|(89,530)|
+1,60,2,40,1,0,0,0,0,64,0,-1--1--1,,1|(228,448)|
+1,61,3,40,1,0,0,0,0,64,0,-1--1--1,,1|(420,502)|
+1,62,25,40,1,0,0,0,0,64,0,-1--1--1,,1|(603,558)|
+1,63,4,40,1,0,0,0,0,64,0,-1--1--1,,1|(282,617)|
+1,64,2,8,1,0,0,0,0,64,0,-1--1--1,,1|(295,288)|
+10,65,Cases,693,787,48,24,3,131,0,0,0,0,0,0
+1,66,68,65,4,0,0,22,0,0,0,-1--1--1,,1|(687,736)|
+1,67,68,42,100,0,0,22,0,0,0,-1--1--1,,1|(687,680)|
+11,68,172,687,704,8,6,33,3,0,0,4,0,0,0
+10,69,Case fatality Rate,748,704,53,22,40,3,0,0,-1,0,0,0
+10,70,Case fatality percentage,897,767,53,22,8,3,0,0,0,0,0,0
+1,71,42,69,1,0,0,0,0,64,0,-1--1--1,,1|(766,656)|
+12,72,7278922,1592,631,262,197,3,188,0,0,1,0,0,0
+Cases
+1,73,70,46,1,0,0,0,0,64,0,-1--1--1,,1|(838,613)|
+1,74,65,46,1,0,0,0,0,64,0,-1--1--1,,1|(797,720)|
+1,75,65,52,1,0,0,0,0,64,0,-1--1--1,,1|(979,703)|
+10,76,Symptomatic Fractional Population,506,528,62,30,8,131,0,0,0,0,0,0
+1,77,3,76,1,0,0,0,0,64,0,-1--1--1,,1|(610,439)|
+1,78,40,76,0,0,0,0,0,64,0,-1--1--1,,1|(302,566)|
+1,79,76,46,1,0,0,0,0,64,0,-1--1--1,,1|(619,514)|
+1,80,76,29,1,0,0,0,0,64,0,-1--1--1,,1|(666,458)|
+10,81,Case Threshold,448,680,63,20,8,131,0,0,0,0,0,0
+1,82,81,46,1,0,0,0,0,64,0,-1--1--1,,1|(601,578)|
+1,83,3,65,1,0,0,0,0,64,0,-1--1--1,,1|(606,755)|
+1,84,70,69,0,0,0,0,0,64,0,-1--1--1,,1|(828,738)|
+1,85,42,65,1,0,0,0,0,64,0,-1--1--1,,1|(724,712)|
+1,86,65,42,1,0,0,0,0,64,0,-1--1--1,,1|(645,716)|
+10,87,Control Measure,947,157,36,22,8,3,0,0,0,0,0,0
+1,88,87,20,1,0,0,0,0,64,0,-1--1--1,,1|(1016,193)|
+1,89,87,65,1,0,0,0,0,64,0,-1--1--1,,1|(526,550)|
+1,90,87,8,1,0,0,0,0,64,0,-1--1--1,,1|(521,128)|
+1,91,81,8,1,0,0,0,0,64,0,-1--1--1,,1|(324,544)|
+1,92,65,8,1,0,0,0,0,64,0,-1--1--1,,1|(429,608)|
+1,93,87,46,1,0,0,0,0,64,0,-1--1--1,,1|(742,267)|
+1,94,87,69,1,0,0,0,0,64,0,-1--1--1,,1|(991,558)|
+12,95,0,617,47,220,23,3,135,0,0,-1,0,0,0
+Stock & Flow Diagram-Extended Model (Liberia)
+///---\\\
+:GRAPH Deaths
+:TITLE Cumulative Deaths (Extended) Liberia
+:WIP
+:STAMP 0
+:X-AXIS Time
+:X-MIN 0
+:X-MAX 800
+:CUMMULATIVE
+:MAX-POINTS 4000
+:SCALE
+:VAR Deaths
+:DATASET *
+
+:GRAPH infection
+:TITLE Cumulative Infection
+:X-AXIS Time
+:X-MIN 0
+:X-MAX 400
+:CUMMULATIVE
+:SCALE
+:VAR Infection Spreadable Population
+
+:GRAPH Cases
+:TITLE Reported Cases (Extended) Liberia
+:X-AXIS Time
+:X-MIN 0
+:X-MAX 800
+:STACK 0
+:SCALE
+:VAR Cases
+
+:GRAPH Infected
+:TITLE Cumulative Infected
+:X-AXIS Time
+:X-MAX 1000
+:CUMMULATIVE
+:SCALE
+:VAR Symptomatic
+:L<%^E!@
+1:Current.vdf
+9:Current
+22:$,Dollar,Dollars,$s
+22:Hour,Hours
+22:Month,Months
+22:Person,People,Persons
+22:Unit,Units
+22:Week,Weeks
+22:Year,Years
+22:Day,Days
+23:0
+15:0,0,0,0,0,0
+19:100,0
+27:2,
+34:0,
+4:Time
+5:Cases
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:4
+41:0
+42:1
+24:0
+25:1000
+26:1000
